@@ -16,10 +16,20 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
+interface MatchUser {
+  id: string;
+  name?: string;
+  age?: number;
+  gender?: string;
+}
+
 interface Match {
   id: string;
   status: string;
-  partnerName?: string;
+  user1: MatchUser;
+  user2: MatchUser;
+  user1Id: string;
+  user2Id: string;
   updatedAt: string;
 }
 
@@ -39,7 +49,7 @@ function colorForId(id: string) {
 }
 
 export default function DashboardPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,17 +153,19 @@ export default function DashboardPage() {
             Connections
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {revealed.map((m) => (
+            {revealed.map((m) => {
+              const partner = m.user1Id === session?.user?.id ? m.user2 : m.user1;
+              return (
               <Link key={m.id} href={`/match/${m.id}`}>
                 <Card className="transition-shadow hover:shadow-md cursor-pointer">
                   <CardContent className="flex items-center gap-4 p-4">
                     <Avatar className="h-12 w-12">
                       <AvatarFallback className="bg-primary text-white">
-                        {m.partnerName?.[0]?.toUpperCase() ?? "M"}
+                        {partner?.name?.[0]?.toUpperCase() ?? "M"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium">{m.partnerName ?? "Your Match"}</p>
+                      <p className="font-medium">{partner?.name ?? "Your Match"}</p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(m.updatedAt).toLocaleDateString()}
                       </p>
@@ -162,7 +174,8 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

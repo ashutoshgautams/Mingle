@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         revealRequest: { ...revealRequest, status: "ACCEPTED" },
         matchStatus: "REVEALED",
-        mutual: true,
+        revealed: true,
       });
     }
 
     return NextResponse.json({
       revealRequest,
       matchStatus: "ANONYMOUS",
-      mutual: false,
+      revealed: false,
     });
   } catch (error) {
     console.error("Reveal request error:", error);

@@ -39,17 +39,20 @@ export async function GET(
       orderBy: { createdAt: "asc" },
     });
 
-    const maskedMessages = messages.map((message) => ({
-      id: message.id,
-      chatId: message.chatId,
-      senderId: message.senderId === userId ? "you" : "partner",
-      content: message.content,
-      type: message.type,
-      audioUrl: message.audioUrl,
-      createdAt: message.createdAt,
-    }));
+    const revealRequests = await prisma.revealRequest.findMany({
+      where: { matchId, status: "PENDING" },
+    });
 
-    return NextResponse.json({ messages: maskedMessages });
+    const otherUserId = match.user1Id === userId ? match.user2Id : match.user1Id;
+    const youRevealed = revealRequests.some((r) => r.requestedByUserId === userId);
+    const partnerRevealed = revealRequests.some((r) => r.requestedByUserId === otherUserId);
+
+    return NextResponse.json({
+      messages,
+      youRevealed,
+      partnerRevealed,
+      status: match.status,
+    });
   } catch (error) {
     console.error("Get messages error:", error);
     return NextResponse.json(

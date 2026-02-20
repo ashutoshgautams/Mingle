@@ -21,7 +21,7 @@ export async function GET() {
 
     const { passwordHash: _, ...profile } = user;
 
-    return NextResponse.json({ profile });
+    return NextResponse.json(profile);
   } catch (error) {
     console.error("Get profile error:", error);
     return NextResponse.json(
@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest) {
 
     const { passwordHash: _, ...profile } = user;
 
-    return NextResponse.json({ profile });
+    return NextResponse.json(profile);
   } catch (error) {
     console.error("Update profile error:", error);
     return NextResponse.json(

@@ -37,8 +37,11 @@ export async function POST() {
     const potentialMatch = await prisma.user.findFirst({
       where: {
         id: { notIn: [userId, ...matchedUserIds] },
-        ...(currentUser.genderPreference !== "any" && { gender: currentUser.genderPreference }),
-        genderPreference: { in: [currentUser.gender, "any"] },
+        ...(currentUser.genderPreference !== "EVERYONE" && { gender: currentUser.genderPreference }),
+        OR: [
+          { genderPreference: currentUser.gender },
+          { genderPreference: "EVERYONE" },
+        ],
         age: { gte: minAge, lte: maxAge },
       },
     });
