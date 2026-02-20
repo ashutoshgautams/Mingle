@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MatchStatus {
+  ANONYMOUS
+  REVEALED
+  DECLINED
+  EXPIRED
+}
+
+enum MessageType {
+  TEXT
+  AUDIO
+}
+
+enum RevealStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  name             String
+  age              Int
+  gender           String
+  genderPreference String
+  bio              String?
+  photos           String[]
+  interests        String[]
+  location         String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  matchesAsUser1   Match[]          @relation("MatchUser1")
+  matchesAsUser2   Match[]          @relation("MatchUser2")
+  messages         Message[]
+  revealRequests   RevealRequest[]
+}
+
+model Match {
+  id        String      @id @default(cuid())
+  user1Id   String
+  user2Id   String
+  status    MatchStatus @default(ANONYMOUS)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  user1          User            @relation("MatchUser1", fields: [user1Id], references: [id])
+  user2          User            @relation("MatchUser2", fields: [user2Id], references: [id])
+  anonymousChat  AnonymousChat?
+  revealRequests RevealRequest[]
+}
+
+model AnonymousChat {
+  id        String   @id @default(cuid())
+  matchId   String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  match    Match     @relation(fields: [matchId], references: [id])
+  messages Message[]
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  chatId    String
+  senderId  String
+  content   String
+  type      MessageType @default(TEXT)
+  audioUrl  String?
+  createdAt DateTime    @default(now())
+
+  chat   AnonymousChat @relation(fields: [chatId], references: [id])
+  sender User          @relation(fields: [senderId], references: [id])
+}
+
+model RevealRequest {
+  id                String       @id @default(cuid())
+  matchId           String
+  requestedByUserId String
+  status            RevealStatus @default(PENDING)
+  createdAt         DateTime     @default(now())
+
+  match       Match @relation(fields: [matchId], references: [id])
+  requestedBy User  @relation(fields: [requestedByUserId], references: [id])
+}
