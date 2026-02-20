@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:socket": "npx tsx src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "^7.4.1",
