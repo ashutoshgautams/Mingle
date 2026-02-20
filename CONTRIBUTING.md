@@ -150,7 +150,7 @@ Use this checklist when testing your changes:
 
 1. Open DevTools: `F12` or `Ctrl+Shift+I` (Windows/Linux) / `Cmd+Option+I` (Mac)
 2. Similar tabs to Chrome DevTools
-3. **Responsive Design Mode**: `Ctrl+Shift+M` / `Cmd+Option+M`
+3. **Responsive Design Mode**: `Ctrl+Shift+M` / `Cmd+Shift+M`
 
 ### Safari Web Inspector (macOS)
 
